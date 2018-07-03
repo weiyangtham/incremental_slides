@@ -37,7 +37,7 @@ We'll use a subset of the `gapminder` dataset and a little bit of data manipulat
 library(tidyverse)
 library(gapminder)
 
-theme_set(ggthemes::theme_fivethirtyeight(base_size = 18))
+theme_set(theme_minimal(base_size = 18))
 
 minigap = gapminder %>%
   filter(country %in% c("Bolivia", "Rwanda", "Germany")) %>% 
