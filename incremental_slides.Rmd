@@ -91,7 +91,7 @@ minigap %>%
 
 # geom_blank does the trick
 
-- `geom_blank` 
+- `geom_blank` preserves the axis scales
 
 ```{r, eval = F, echo = T}
 p = ggplot(minigap, aes(year, gdpPercap, colour = country)) + 
