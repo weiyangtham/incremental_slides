@@ -89,27 +89,45 @@ p = ggplot(minigap, aes(year, gdpPercap, colour = country)) +
   geom_blank() + 
   scale_colour_manual(values = c("red", "blue", "green")) + 
   NULL
-
-p + geom_line(data = filter(minigap, country == "Rwanda")) 
 ```
+
+- From here,  we can add each country's line layer by layer, starting from
+
+
+```r
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda")) 
+```
+
+and ending with 
+
+
+```r
+# Final plot
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Bolivia"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Germany"), size = 1.2)
+```
+
 
 ---
 
 # Rwanda
 
-&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Rwanda, Bolivia
 
-&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Rwanda, Bolivia, and Germany
 
-&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -117,18 +135,20 @@ p + geom_line(data = filter(minigap, country == "Rwanda"))
 
 - Some people even suggest building the graph starting from the axes, without any data plotted i.e. start with
 
-&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 - Unfortunately I don't know how to do this and still have a legend **(if you do, let me know!)**
 - Generally, I prefer to do without a legend and have labels directly on the graph. If you do that, then this issue doesn't matter
 
 ---
 
-# Sources
+# Sources + Resources
 
 - [Stack Overflow](https://stackoverflow.com/questions/22276761/how-to-add-a-legend-label-in-a-plot-when-there-is-no-data-points-with-that-labe)
 
 - [Better Presentations by Jon Schwabish](https://policyviz.com/better-presentations/)
+
+- [Paul Goldsmith-Pinkham's beamer tips](https://github.com/paulgp/beamer-tips)
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

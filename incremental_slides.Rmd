@@ -98,10 +98,26 @@ p = ggplot(minigap, aes(year, gdpPercap, colour = country)) +
   geom_blank() + 
   scale_colour_manual(values = c("red", "blue", "green")) + 
   NULL
-
-p + geom_line(data = filter(minigap, country == "Rwanda")) 
-
 ```
+
+- From here,  we can add each country's line layer by layer, starting from
+
+```{r, eval=FALSE, echo=TRUE}
+
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda")) 
+```
+
+and ending with 
+
+```{r, eval = FALSE, echo=TRUE}
+# Final plot
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Bolivia"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Germany"), size = 1.2)
+```
+
 
 ---
 
@@ -158,8 +174,10 @@ ggplot(minigap, aes(year, gdpPercap, colour = country)) +
 
 ---
 
-# Sources
+# Sources + Resources
 
 - [Stack Overflow](https://stackoverflow.com/questions/22276761/how-to-add-a-legend-label-in-a-plot-when-there-is-no-data-points-with-that-labe)
 
 - [Better Presentations by Jon Schwabish](https://policyviz.com/better-presentations/)
+
+- [Paul Goldsmith-Pinkham's beamer tips](https://github.com/paulgp/beamer-tips)
