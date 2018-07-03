@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Incremental Graphs</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Wei Yang Tham" />
+    <meta name="date" content="2018-07-02" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Incremental Graphs
+### Wei Yang Tham
+### July 02, 2018
+
+---
+
+
+# Intro
+
+
+
+- Adding elements of a chart incrementally can help immensely with clarity
+- These slides contain a few pointers for making an incremental chart with `ggplot2`
+- tl;dr - use `geom_blank`
+
+---
+
+# Set up
+
+We'll use a subset of the `gapminder` dataset and a little bit of data manipulation with `tidyverse` packages. 
+
+
+```r
+# install.packages("tidyverse")
+# install.packages("gapminder")
+
+library(tidyverse)
+library(gapminder)
+
+theme_set(ggthemes::theme_fivethirtyeight(base_size = 18))
+
+minigap = gapminder %&gt;%
+  filter(country %in% c("Bolivia", "Rwanda", "Germany")) %&gt;% 
+  mutate(country = 
+           fct_relevel(country, c("Rwanda", "Bolivia", "Germany")))
+```
+
+---
+
+# Target plot
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Goal
+
+- Show Rwanda first, then Bolivia, then Germany
+- Natural first step is to tell `geom_line` to only plot Rwanda
+
+
+```r
+minigap %&gt;% 
+  ggplot(aes(year, gdpPercap, colour = country)) + 
+  geom_line(data = filter(minigap, country == "Rwanda")) + 
+  scale_colour_manual(values = c("red", "blue", "green")) 
+```
+
+---
+
+# First try
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# geom_blank does the trick
+
+- `geom_blank` 
+
+
+```r
+p = ggplot(minigap, aes(year, gdpPercap, colour = country)) + 
+  geom_blank() + 
+  scale_colour_manual(values = c("red", "blue", "green")) + 
+  NULL
+
+p + geom_line(data = filter(minigap, country == "Rwanda")) 
+```
+
+---
+
+# Rwanda
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Rwanda, Bolivia
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Rwanda, Bolivia, and Germany
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Additional notes
+
+- Some people even suggest building the graph starting from the axes, without any data plotted i.e. start with
+
+&lt;img src="incremental_slides_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+- Unfortunately I don't know how to do this and still have a legend **(if you do, let me know!)**
+- Generally, I prefer to do without a legend and have labels directly on the graph. If you do that, then this issue doesn't matter
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,157 @@
+---
+title: "Incremental Graphs"
+author: "Wei Yang Tham"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+# Intro
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, 
+  comment = NA, dpi = 300, echo = FALSE, cache = F,
+  fig.align = "center", out.width = "100%", fig.asp = 0.618)
+```
+
+- Adding elements of a chart incrementally can help immensely with clarity
+- These slides contain a few pointers for making an incremental chart with `ggplot2`
+- tl;dr - use `geom_blank`
+
+---
+
+# Set up
+
+We'll use a subset of the `gapminder` dataset and a little bit of data manipulation with `tidyverse` packages. 
+
+```{r, echo=TRUE, tidy=FALSE}
+# install.packages("tidyverse")
+# install.packages("gapminder")
+
+library(tidyverse)
+library(gapminder)
+
+theme_set(ggthemes::theme_fivethirtyeight(base_size = 18))
+
+minigap = gapminder %>%
+  filter(country %in% c("Bolivia", "Rwanda", "Germany")) %>% 
+  mutate(country = 
+           fct_relevel(country, c("Rwanda", "Bolivia", "Germany")))
+
+```
+
+---
+
+# Target plot
+
+```{r}
+original = minigap %>% 
+  ggplot(aes(year, gdpPercap, colour = country)) + 
+  geom_line(size = 1.2) + 
+  scale_colour_manual(values = c("red", "blue", "green")) 
+
+original
+```
+
+---
+
+# Goal
+
+- Show Rwanda first, then Bolivia, then Germany
+- Natural first step is to tell `geom_line` to only plot Rwanda
+
+```{r, eval=FALSE, echo = TRUE}
+minigap %>% 
+  ggplot(aes(year, gdpPercap, colour = country)) + 
+  geom_line(data = filter(minigap, country == "Rwanda")) + 
+  scale_colour_manual(values = c("red", "blue", "green")) 
+```
+
+---
+
+# First try
+
+```{r}
+minigap %>% 
+  ggplot(aes(year, gdpPercap, colour = country)) + 
+  geom_line(data = filter(minigap, country == "Rwanda")) + 
+  scale_colour_manual(values = c("red", "blue", "green")) + 
+  labs(title = "Y-axis range has changed!", 
+       subtitle = "Legend only has one country")
+```
+
+
+---
+
+# geom_blank does the trick
+
+- `geom_blank` 
+
+```{r, eval = F, echo = T}
+p = ggplot(minigap, aes(year, gdpPercap, colour = country)) + 
+  geom_blank() + 
+  scale_colour_manual(values = c("red", "blue", "green")) + 
+  NULL
+
+p + geom_line(data = filter(minigap, country == "Rwanda")) 
+
+```
+
+---
+
+# Rwanda
+
+```{r}
+
+p = ggplot(minigap, aes(year, gdpPercap, colour = country)) + 
+  geom_blank() + 
+  scale_colour_manual(values = c("red", "blue", "green")) + 
+  NULL
+
+p + geom_line(data = filter(minigap, country == "Rwanda"), size = 1.2) 
+
+```
+
+---
+
+# Rwanda, Bolivia
+
+```{r}
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Bolivia"), size = 1.2)
+
+```
+
+---
+
+# Rwanda, Bolivia, and Germany
+
+```{r}
+p + 
+  geom_line(data = filter(minigap, country == "Rwanda"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Bolivia"), size = 1.2) + 
+  geom_line(data = filter(minigap, country == "Germany"), size = 1.2)
+```
+
+---
+
+# Additional notes
+
+- Some people even suggest building the graph starting from the axes, without any data plotted i.e. start with
+
+```{r, out.width='60%'}
+ggplot(minigap, aes(year, gdpPercap, colour = country)) + 
+  geom_blank() + 
+  scale_colour_manual(values = c("red", "blue", "green")) + 
+  labs(title = "There is no legend")
+```
+
+- Unfortunately I don't know how to do this and still have a legend **(if you do, let me know!)**
+- Generally, I prefer to do without a legend and have labels directly on the graph. If you do that, then this issue doesn't matter
